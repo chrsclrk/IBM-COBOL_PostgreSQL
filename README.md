@@ -4,7 +4,7 @@
 
 
 <p>
-In a wide-ranging discussion about technology, a friend and I discussed this development.  Our conversation motivated me to create the content in this repository.
+In a wide-ranging technology conversation, a friend and I discussed this development.  That conversation motivated me to create the content in this repository.
 </p>
 
 With the PostgreSQL command line tool pgsl a database query can be expressed as:
