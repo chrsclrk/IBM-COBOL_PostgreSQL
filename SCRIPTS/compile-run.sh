@@ -30,33 +30,32 @@ REMOTE=${2:-ic4lx86}
 
 #MAIN
 
-wrt_msg '***' "001  Compile and execute ${1} on the remote RHEL machine."
+wrt_msg '***' "001  sftp ${1} to the machine with IBM COBOL."
 strng='sftp '
 strng+="${REMOTE}"
 strng+=':/home/virtuser/COBOL <<< "put ../COBOL/'
 strng+="${1}"
 strng+='.cobol"'
 printf '>>>%s<<<\n\n' ${strng}
-# sftp ic4lx86:/home/virtuser/COBOL <<< "put ../COBOL/${1}.cobol"
-bash -c "${strng}"
+# sftp ic4lx86:/home/virtuser/COBOL <<< "put COBOL/${1}.cobol"
+eval ${strng}
 
-wrt_msg '***' '002  Compile and link-edit to PGSQL ecpg.'
+wrt_msg '***' '002  Compile and link-edit to PGSQL using ecpg.'
 strng='cob2_pgsql /home/virtuser/COBOL/'
 strng+="${1}"
 strng+='.cobol -o '
 strng+="${1}"
-ssh_cmd="ssh ${REMOTE} ${strng}"
+ssh_cmd="ssh -T ${REMOTE} ${strng}"
 printf '>>>%s<<<\n\n' "${ssh_cmd}"
-bash -c "${ssh_cmd}"
+eval ${ssh_cmd}
 
-wrt_msg '***' '003  Execute the COBOL program to display results from PGSQL.'
-strng='./'
-strng+="${1}"
-# printf '>>>%s<<<\n\n' ${strng}
-# ssh ic4lx86 "${strng}"
-ssh_cmd="ssh ${REMOTE} ${strng}"
-printf '>>>%s<<<\n\n' "${ssh_cmd}"
-bash -c "${ssh_cmd}"
+wrt_msg '***' '003  Execute the COBOL program. Displays results from PGSQL.'
+strng="ssh -T ${REMOTE} "
+strng+=$'\'source /home/virtuser/pgsql_env_vars && '
+strng+="/home/virtuser/${1}"
+strng+=$'\''
+printf '>>>%s<<<\n\n' "$strng"
+eval $strng
 
 wrt_msg '***' '004  Validate the COBOL PGSQL results with psql expression equivalent to the COBOL program.'
 printf '>>>%s<<<\n\n' $'psql --dbname AD22 --command "SELECT CONCAT(first_name, \' \', last_name) AS emp_names FROM teachers;"'
